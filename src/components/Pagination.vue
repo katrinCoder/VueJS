@@ -1,8 +1,8 @@
 <template>
   <div class="pagination" v-if="pages > 0">
-    <button class="pagElem" @click="pageDown">&lt;</button>
-    <div class="pagElem" v-for="page in pages" :key="page" v-bind="length">{{ page }}</div>
-    <button class="pagElem" @click="pageUp">&gt;</button>
+    <button class="pagButton" @click="pageDown">&lt;</button>
+    <button class="pagButton" @click="chosePage(page)" v-for="page in pages" :key="page" v-bind="length">{{ page }}</button>
+    <button class="pagButton" @click="pageUp">&gt;</button>
   </div>
 </template>
 
@@ -32,6 +32,10 @@ export default {
         this.currentPage += 1
       }
       this.$emit('getCurrentPage', this.currentPage)
+    },
+    chosePage (page) {
+      this.currentPage = page
+      this.$emit('getCurrentPage', this.currentPage)
     }
   },
   updated () {
@@ -55,12 +59,14 @@ export default {
   border: 1px solid lightgray;
   margin-top: -1px;
   padding: 0 5px;
+}
+.pagButton {
+  margin: 0 10px;
+  background: transparent;
+  border: none;
   font: 700 15px sans-serif;
 }
-.pagElem {
-  margin: 0 10px;
-}
-.pagElem:active {
+.pagButton:active {
   color: LightSeaGreen;
 }
 </style>
