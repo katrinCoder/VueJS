@@ -6,8 +6,8 @@
     <div>Category</div>
     <div>Value</div>
   </div>
-  <div class="element" v-for="(item, index) in items" :key="index">
-    <div>{{ (currentPage - 1) * 5 + index + 1 }}</div>
+  <div class="element" v-for="(item) in items" :key="item.id">
+    <div>{{ item.id }}</div>
     <div>{{ item.date }}</div>
     <div>{{ item.category }}</div>
     <div>{{ item.value }}</div>
@@ -16,18 +16,26 @@
 </template>
 
 <script>
+// import { mapGetters } from 'vuex'
+
 export default {
   name: 'PaymentDisplay',
   props: {
     items: {
       type: Array,
       default: () => ([])
-    },
-    currentPage: {
-      type: Number,
-      default: () => (1)
     }
+    // currentPage: {
+    //   type: Number,
+    //   default: () => (1)
+    // }
   }
+  // computed: {
+  //   ...mapGetters([
+  //     // 'currentPage',
+  //     'paymentsList'
+  //   ])
+  // }
 }
 </script>
 

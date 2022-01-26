@@ -4,13 +4,19 @@
       <div class="header">My personal costs</div>
     </header>
     <main>
-      <button class="button" @click="show = !show">Add new cost  +</button>
-      <AddPaymentForm @add-payment="addPayment" :categoryList="categoryList" :show="show"/>
-      <div>Total: {{ paymentsListTotalAmount }}</div>
+      <div class="containerAddForms">
+        <div>
+          <button class="button" @click="showPayment = !showPayment">Add new cost  +</button>
+          <AddPaymentForm @add-payment="addPayment" :categoryList="categoryList" :show="showPayment"/>
+        </div>
+        <div>
+          <button class="button" @click="showCategory = !showCategory">Add new category  +</button>
+          <AddCategoryForm @add-category="addCategory" :categoryList="categoryList" :show="showCategory"/>
+        </div>
+      </div>
+      <!--<div>Total: {{ paymentsListTotalAmount }}</div>-->
       <PaymentDisplay :items="paymentsList"/>
-      <!--<PaymentDisplay :items="currentList" :currentPage="currentPage"/>-->
-      <!--<PaginationComp @getCurrentPage="getCurrentPage" :length="paymentsList.length"/>-->
-      <PaginationComp @getCurrentPage="getCurrentPage"/>
+      <PaginationComp/>
     </main>
   </div>
 </template>
@@ -19,52 +25,48 @@
 import { mapMutations, mapActions, mapGetters } from 'vuex'
 import PaymentDisplay from '@/components/PaymentDisplay.vue'
 import AddPaymentForm from '@/components/AddPaymentForm.vue'
+import AddCategoryForm from '@/components/AddCategoryForm.vue'
 import PaginationComp from '@/components/Pagination.vue'
 
 export default {
   name: 'App',
   components: {
     AddPaymentForm,
+    AddCategoryForm,
     PaymentDisplay,
     PaginationComp
   },
   data: () => ({
-    show: false
-    // paymentsList: [],
-    // currentList: [],
-    // currentPage: 1
+    showPayment: false,
+    showCategory: false
   }),
   methods: {
-    ...mapMutations(['ADD_PAYMENT_DATA']),
+    ...mapMutations([
+      'ADD_PAYMENT_DATA',
+      'ADD_CATEGORY'
+    ]),
     ...mapActions([
       'fetchData',
       'fetchCategoryList'
     ]),
     addPayment (data) {
       this.ADD_PAYMENT_DATA(data)
-      // this.fillCurrentList(this.paymentsList, this.currentPage)
     },
-    // fillCurrentList (data, page) {
-    //   const firstIndex = (this.currentPage - 1) * 5
-    //   this.currentList = data.slice(firstIndex, firstIndex + 5)
-    // },
-    getCurrentPage (data) {
-      this.currentPage = data
-      // this.fillCurrentList(this.paymentsList, this.currentPage)
+    addCategory (category) {
+      this.ADD_CATEGORY(category)
     }
   },
   computed: {
     ...mapGetters([
       'paymentsList',
-      'paymentsListTotalAmount',
+      // 'paymentsListTotalAmount',
       'categoryList',
       'currentPage'
     ])
   },
   created () {
-    this.fetchData()
+    this.fetchData({ page: this.currentPage })
     this.fetchCategoryList()
-    // this.fillCurrentList(this.paymentsList, 1)
   }
 }
 </script>
@@ -82,6 +84,11 @@ export default {
 .header {
   font: 600 40px sans-serif;
   margin-bottom: 10px;
+}
+.containerAddForms {
+  display: flex;
+  width: 480px;
+  justify-content: space-between;
 }
 .button {
   width: 150px;

@@ -7,53 +7,44 @@
 </template>-->
 
 <template>
-  <div class="pagination" v-if="pages > 0">
+  <div class="pagination" v-if="numOfPages > 0">
     <button class="pagButton" @click="pageDown">&lt;</button>
-    <button class="pagButton" @click="chosePage(page)" v-for="page in pages" :key="page">{{ page }}</button>
+    <button class="pagButton" @click="chosePage(page)" v-for="page in numOfPages" :key="page">{{ page }}</button>
     <button class="pagButton" @click="pageUp">&gt;</button>
   </div>
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
+import { mapMutations, mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'PaginationComp',
-  data: () => ({
-    // pages: 1,
-    // currentPage: 1,
-    // numPagesOnPage: 3
-  }),
-  props: {
-    length: {
-      type: Number,
-      default: 3
-    }
-  },
   methods: {
     ...mapMutations(['SET_NEW_PAGE']),
+    ...mapActions([
+      'fetchData'
+    ]),
     pageDown () {
       if (this.currentPage > 1) {
-        this.currentPage -= 1
+        this.SET_NEW_PAGE(this.currentPage - 1)
+        this.fetchData({ page: this.currentPage })
       }
-      this.SET_NEW_PAGE(this.currentPage)
-      // this.$emit('getCurrentPage', this.currentPage)
     },
     pageUp () {
-      if (this.currentPage < this.pages) {
-        this.currentPage += 1
+      if (this.currentPage < this.numOfPages) {
+        this.SET_NEW_PAGE(this.currentPage + 1)
+        this.fetchData({ page: this.currentPage })
       }
-      this.SET_NEW_PAGE(this.currentPage)
-      // this.$emit('getCurrentPage', this.currentPage)
     },
     chosePage (page) {
       this.SET_NEW_PAGE(page)
-      // this.$emit('getCurrentPage', this.currentPage)
+      this.fetchData({ page: this.currentPage })
     }
   },
   computed: {
     ...mapGetters([
-      'currentPage'
+      'currentPage',
+      'numOfPages'
     ])
   },
   updated () {

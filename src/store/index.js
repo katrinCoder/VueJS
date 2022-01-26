@@ -6,30 +6,44 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    paymentsList: [],
+    paymentsList: {},
+    paymentsListCurrent: [],
     currentPage: 1,
-    numOfPages: 1
+    numOfPages: 2
   },
   mutations: {
-    SET_PAYMENTS_LIST (state, paymentsList) {
-      state.paymentsList = paymentsList
+    SET_PAYMENTS_LIST (state, paymentsListCurrent) {
+      if (!state.paymentsList['page' + state.currentPage]) {
+        state.paymentsList['page' + state.currentPage] = paymentsListCurrent
+        state.paymentsListCurrent = paymentsListCurrent
+      } else {
+        state.paymentsListCurrent = state.paymentsList['page' + state.currentPage]
+      }
     },
     ADD_PAYMENT_DATA (state, payment) {
-      state.paymentsList.push(payment)
+      if (Object.keys(state.paymentsList['page' + state.numOfPages]).length < 3) {
+        state.paymentsList['page' + state.numOfPages][Object.keys(state.paymentsList['page' + state.numOfPages]).length] = payment
+      } else {
+        state.numOfPages += 1
+        state.paymentsList['page' + state.numOfPages] = []
+        state.paymentsList['page' + state.numOfPages].push(payment)
+        state.currentPage = state.numOfPages
+      }
+      state.paymentsList['page' + state.numOfPages][Object.keys(state.paymentsList['page' + state.numOfPages]).length - 1].id = (state.numOfPages - 1) * 3 + Object.keys(state.paymentsList['page' + state.numOfPages]).length
+      state.paymentsListCurrent = state.paymentsList['page' + state.currentPage]
     },
     SET_NEW_PAGE (state, currentPage) {
-      state.currenetPage = currentPage
+      state.currentPage = currentPage
     }
   },
   getters: {
     currentPage: (state) => state.currentPage,
-    paymentsList: (state) => state.paymentsList['page' + state.currentPage],
-    paymentsListTotalAmount: ({ paymentsList }) => paymentsList
-      .reduce((total, { value }) => total + value, 0),
-    numOfPages: (state) => state.paymentsList.length
+    paymentsList: (state) => state.paymentsListCurrent,
+    numOfPages: (state) => state.numOfPages
+    // paymentsListTotalAmount: ({ paymentsList }) => Object.keys(paymentsList).reduce((total, { value }) => total + value, 0)
   },
   actions: {
-    fetchData ({ commit }) {
+    fetchData ({ commit }, { page }) {
       setTimeout(() => {
         const paymentsList = {
           page1: [
@@ -43,7 +57,7 @@ export default new Vuex.Store({
             { id: 6, date: '25.03.2020', category: 'Food', value: 200 }
           ]
         }
-        commit('SET_PAYMENTS_LIST', paymentsList)
+        commit('SET_PAYMENTS_LIST', paymentsList['page' + page])
       }, 1000)
     }
   },
@@ -51,3 +65,4 @@ export default new Vuex.Store({
     category
   }
 })
+// ({ commit }, page) {
