@@ -48,6 +48,11 @@ export default {
   mounted () {
     this.$modal.EventBus.$on('show', this.modalOpen)
     this.$modal.EventBus.$on('hide', this.modalClose)
+    }
+  },
+  computed: {
+  },
+  created () {
   }
 }
 </script>
